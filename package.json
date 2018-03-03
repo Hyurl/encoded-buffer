@@ -1,0 +1,28 @@
+{
+  "name": "encoded-buffer",
+  "version": "0.1.0",
+  "description": "Encode data into a well-formatted buffer and decode it when needed.",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "encode",
+    "decode",
+    "buffer"
+  ],
+  "author": {
+    "name": "Ayon Lee",
+    "email": "i@hyurl.com",
+    "url": "http://hyurl.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyurl/encoded-buffer.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "source-map-support": "^0.5.3"
+  }
+}
