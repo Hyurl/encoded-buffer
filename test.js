@@ -21,6 +21,8 @@ let data = [
 
 let buf = encode(...data);
 
+console.log(buf.toString());
+
 assert.equal(buf.toString(), [
     's:6:string;n:5:12345;S:12:Symbol(desc);r:8:/regexp/;a:31:[s:1:a;s:1:r;s:1:r;s:1:a;s:1:y];o:17:{type:s:6:object};v:0:;u:0:;b:11:or a buffer;e:409:Error: even an error',
     `    at Object.<anonymous> (${__filename}:19:5)`,
