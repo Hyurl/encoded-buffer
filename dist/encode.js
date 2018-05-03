@@ -41,7 +41,7 @@ function encodePart(data) {
         case "function":
         case "undefined":
         case "void":
-            body = Buffer.from([0x0]);
+            body = Buffer.from([]);
             break;
         case "object":
             let start2 = Buffer.from("{"), end2 = Buffer.from("}"), pairs = [];

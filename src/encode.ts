@@ -54,7 +54,7 @@ function encodePart(data: any): Buffer {
         case "function": // functions cannot be encoded.
         case "undefined":
         case "void":
-            body = Buffer.from([0x0]); // buffered as 0x0.
+            body = Buffer.from([]); // buffered as 0x0.
             break;
 
         case "object": // cyclically encode every property in the object.

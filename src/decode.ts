@@ -120,7 +120,7 @@ function decodePart(part: DataPart): DataPart {
  * Decodes a buffer that is formatted by `encode()`.
  * @returns If failed, `null` will be returned.
  */
-export function decode(buf: Buffer): void | any[] {
+export function decode(buf: Buffer): any[] {
     try {
         let part = decodePart(getPart(buf)); // decode the first part.
         let res: any[] = [part.data];
