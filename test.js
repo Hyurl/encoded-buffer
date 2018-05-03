@@ -1,3 +1,8 @@
+/**
+ * This test only works with NodeJS6, since the error stack in different 
+ * versions are different. Be aware to modify, and run it with NodeJS6.
+ */
+
 const { encode, decode } = require("./");
 const assert = require("assert");
 
@@ -17,16 +22,16 @@ let data = [
 let buf = encode(...data);
 
 assert.equal(buf.toString(), [
-    's:6:string;n:5:12345;S:12:Symbol(desc);r:8:/regexp/;a:31:[s:1:a;s:1:r;s:1:r;s:1:a;s:1:y];o:17:{type:s:6:object};v:0:;u:0:;b:11:or a buffer;e:595:Error: even an error',
-    `    at Object.<anonymous> (${__filename}:14:5)`,
-    '    at Module._compile (internal/modules/cjs/loader.js:654:30)',
-    '    at Object.Module._extensions..js (internal/modules/cjs/loader.js:665:10)',
-    '    at Module.load (internal/modules/cjs/loader.js:566:32)',
-    '    at tryModuleLoad (internal/modules/cjs/loader.js:506:12)',
-    '    at Function.Module._load (internal/modules/cjs/loader.js:498:3)',
-    '    at Function.Module.runMain (internal/modules/cjs/loader.js:695:10)',
-    '    at startup (internal/bootstrap/node.js:201:19)',
-    '    at bootstrapNodeJSCore (internal/bootstrap/node.js:516:3)'
+    's:6:string;n:5:12345;S:12:Symbol(desc);r:8:/regexp/;a:31:[s:1:a;s:1:r;s:1:r;s:1:a;s:1:y];o:17:{type:s:6:object};v:0:;u:0:;b:11:or a buffer;e:409:Error: even an error',
+    `    at Object.<anonymous> (${__filename}:19:5)`,
+    '    at Module._compile (module.js:541:32)',
+    '    at Object.Module._extensions..js (module.js:550:10)',
+    '    at Module.load (module.js:456:32)',
+    '    at tryModuleLoad (module.js:415:12)',
+    '    at Function.Module._load (module.js:407:3)',
+    '    at Function.Module.runMain (module.js:575:10)',
+    '    at startup (node.js:159:18)',
+    '    at node.js:444:3'
 ].join("\n"));
 
 let _data = decode(buf); // decode data
