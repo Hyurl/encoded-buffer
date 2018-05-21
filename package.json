@@ -1,6 +1,6 @@
 {
   "name": "encoded-buffer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Encode data into a well-formatted buffer and decode it when needed.",
   "main": "dist/index.js",
   "types": "src/index.ts",
@@ -23,6 +23,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "source-map-support": "^0.5.3"
+    "source-map-support": "^0.5.3",
+    "tslib": "^1.9.1"
   }
 }

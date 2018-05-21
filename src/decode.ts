@@ -1,5 +1,5 @@
-import { ErrorLike } from "./ErrorLike";
 import { KeyType } from "./type-map";
+const inspect = require("util").inspect.custom || "inspect";
 
 type DataPart = {
     type: string;
@@ -63,10 +63,16 @@ function decodePart(part: DataPart): DataPart {
                 name = matches[1],
                 msg = matches[2];
 
-            res = Object.create(ErrorLike.prototype);
-            res.name = name;
-            res.message = msg;
-            res.stack = stack;
+            res = Object.create(Error.prototype, {
+                name: { value: name },
+                message: { value: msg },
+                stack: { value: stack },
+                [inspect]: {
+                    value: function () {
+                        return this.stack;
+                    }
+                }
+            });
             break;
 
         case "function": // functions cannot be encoded.

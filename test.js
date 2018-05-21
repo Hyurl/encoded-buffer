@@ -1,7 +1,9 @@
-const { encode, decode } = require("./");
+const encode = require("./").encode;
+const decode = require("./").decode;
 const assert = require("assert");
 
-let data = [
+var buf = parseFloat(process.version.slice(1)) < 6 ? new Buffer("or a buffer") : Buffer.from("or a buffer");
+var data = [
     "string",
     12345,
     Symbol("desc"),
@@ -10,16 +12,16 @@ let data = [
     { type: "object" },
     null,
     undefined,
-    Buffer.from("or a buffer"),
+    buf,
     new Error("even an error")
 ];
 
-let buf = encode(...data);
+var buf = encode.apply(null, data);
 
-let _data = decode(buf); // decode data
+var _data = decode(buf); // decode data
 
-for (let i in _data) {
-    let item = _data[i];
+for (var i in _data) {
+    var item = _data[i];
     if (typeof item == "string" || typeof item == "number" || item === null || item === undefined) {
         assert.strictEqual(item, data[i]);
     } else if (Array.isArray(item)) {
@@ -31,4 +33,4 @@ for (let i in _data) {
     }
 }
 
-console.log("All tests passed!");
+console.log("#### OK ####");

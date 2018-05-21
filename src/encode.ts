@@ -1,10 +1,16 @@
 import { getType } from "./get-type";
 import { TypeKey } from "./type-map";
 
+const isOldNode = parseFloat(process.version.slice(1)) < 6.0;
+
+function toBuffer(input: any): Buffer {
+    return isOldNode ? new Buffer(input) : Buffer.from(input);
+}
+
 /** Concatenates buffers, adds ';' between each buffer. . */
 function concatBuffers(bufs: Buffer[]): Buffer {
-    let res: Buffer = Buffer.from([]),
-        sep: Buffer = Buffer.from(";");
+    let res: Buffer = toBuffer([]),
+        sep: Buffer = toBuffer(";");
 
     for (let i in bufs) {
         if (<any>i == 0) {
@@ -25,8 +31,8 @@ function encodePart(data: any): Buffer {
 
     switch (type) {
         case "Array": // cyclically encode every element in the array.
-            let start = Buffer.from("["), // arrays are enwrapped in [].
-                end = Buffer.from("]"),
+            let start = toBuffer("["), // arrays are enwrapped in [].
+                end = toBuffer("]"),
                 bufs: Buffer[] = [];
 
             for (let ele of data) {
@@ -42,29 +48,29 @@ function encodePart(data: any): Buffer {
             break;
 
         case "Error": // encode the error stack.
-            body = Buffer.from((<Error>data).stack);
+            body = toBuffer((<Error>data).stack);
             break;
 
         case "number":
         case "RegExp":
         case "symbol":
-            body = Buffer.from(data.toString());
+            body = toBuffer(data.toString());
             break;
 
         case "function": // functions cannot be encoded.
         case "undefined":
         case "void":
-            body = Buffer.from([]); // buffered as 0x0.
+            body = toBuffer([]); // buffered as 0x0.
             break;
 
         case "object": // cyclically encode every property in the object.
-            let start2 = Buffer.from("{"), // objects are enwrapped in { }.
-                end2 = Buffer.from("}"),
+            let start2 = toBuffer("{"), // objects are enwrapped in { }.
+                end2 = toBuffer("}"),
                 pairs: Buffer[] = [];
 
             for (let x in data) {
                 if ((<object>data).hasOwnProperty(x)) {
-                    let keyBuf = Buffer.from(`${x}:`);
+                    let keyBuf = toBuffer(`${x}:`);
                     let valueBuf = encodePart(data[x]);
                     pairs.push(Buffer.concat([keyBuf, valueBuf]));
                 }
@@ -74,15 +80,15 @@ function encodePart(data: any): Buffer {
             break;
 
         case "string":
-            body = Buffer.from(<string>data);
+            body = toBuffer(<string>data);
             break;
 
         default: // transform unknown types.
-            body = Buffer.from(String(data));
+            body = toBuffer(String(data));
             break;
     }
 
-    head = Buffer.from(`${key}:${body.byteLength}:`);
+    head = toBuffer(`${key}:${body.byteLength}:`);
 
     return Buffer.concat([head, body]);
 }

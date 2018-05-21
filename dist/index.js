@@ -1,9 +1,7 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = require("tslib");
 require("source-map-support/register");
-__export(require("./encode"));
-__export(require("./decode"));
+tslib_1.__exportStar(require("./encode"), exports);
+tslib_1.__exportStar(require("./decode"), exports);
 //# sourceMappingURL=index.js.map

@@ -10,7 +10,7 @@ function isError(obj) {
     return type(obj) == "Error";
 }
 function getType(obj) {
-    let type;
+    var type;
     if (Buffer.isBuffer(obj)) {
         type = "Buffer";
     }

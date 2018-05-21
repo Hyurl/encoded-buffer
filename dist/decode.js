@@ -1,38 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const ErrorLike_1 = require("./ErrorLike");
-const type_map_1 = require("./type-map");
+var type_map_1 = require("./type-map");
+var inspect = require("util").inspect.custom || "inspect";
 function throwError() {
     throw new TypeError("The buffer cannot be decoded.");
 }
 function getPart(buf) {
     if (buf[1] !== 58)
         throwError();
-    let type = String.fromCharCode(buf[0]);
+    var type = String.fromCharCode(buf[0]);
     if (type_map_1.KeyType[type] === undefined)
         throwError();
     type = type_map_1.KeyType[type];
-    let i = buf.indexOf(":", 2);
+    var i = buf.indexOf(":", 2);
     if (i <= 2)
         throwError();
-    let lenStr = buf.slice(2, i).toString();
+    var lenStr = buf.slice(2, i).toString();
     if (isNaN(lenStr))
         throwError();
-    let len = parseInt(lenStr);
-    let start = i + 1, end = start + len, data = buf.slice(start, end);
-    return { type, data, left: buf.slice(end + 1) };
+    var len = parseInt(lenStr);
+    var start = i + 1, end = start + len, data = buf.slice(start, end);
+    return { type: type, data: data, left: buf.slice(end + 1) };
 }
 function decodePart(part) {
-    let res;
-    let { type, left } = part;
-    let data = part.data;
+    var res;
+    var type = part.type, left = part.left;
+    var data = part.data;
     if (type == "Array" || type == "object")
         data = data.slice(1, -1);
     switch (type) {
         case "Array":
             res = [];
             while (data.byteLength > 0) {
-                let _part = decodePart(getPart(data));
+                var _part = decodePart(getPart(data));
                 data = _part.left;
                 res.push(_part.data);
             }
@@ -41,11 +41,18 @@ function decodePart(part) {
             res = data;
             break;
         case "Error":
-            let stack = data.toString(), matches = stack.match(/(.+): (.+)/), name = matches[1], msg = matches[2];
-            res = Object.create(ErrorLike_1.ErrorLike.prototype);
-            res.name = name;
-            res.message = msg;
-            res.stack = stack;
+            var stack = data.toString(), matches = stack.match(/(.+): (.+)/), name = matches[1], msg = matches[2];
+            res = Object.create(Error.prototype, (_a = {
+                    name: { value: name },
+                    message: { value: msg },
+                    stack: { value: stack }
+                },
+                _a[inspect] = {
+                    value: function () {
+                        return this.stack;
+                    }
+                },
+                _a));
             break;
         case "function":
         case "undefined":
@@ -60,34 +67,35 @@ function decodePart(part) {
         case "object":
             res = {};
             while (data.byteLength > 0) {
-                let i = data.indexOf(":"), key = data.slice(0, i).toString();
-                data = data.slice(i + 1);
-                let _part = decodePart(getPart(data));
+                var i_1 = data.indexOf(":"), key = data.slice(0, i_1).toString();
+                data = data.slice(i_1 + 1);
+                var _part = decodePart(getPart(data));
                 data = _part.left;
                 res[key] = _part.data;
             }
             break;
         case "RegExp":
-            let i = data.lastIndexOf("/"), pattern = data.slice(1, i).toString(), flags = data.slice(i + 1).toString();
+            var i = data.lastIndexOf("/"), pattern = data.slice(1, i).toString(), flags = data.slice(i + 1).toString();
             res = new RegExp(pattern, flags);
             break;
         case "symbol":
-            let desc = data.toString().match(/\((.*)\)/)[1];
+            var desc = data.toString().match(/\((.*)\)/)[1];
             res = Symbol(desc);
             break;
         default:
             res = data.toString();
             break;
     }
-    return { type, data: res, left };
+    return { type: type, data: res, left: left };
+    var _a;
 }
 function decode(buf) {
     try {
-        let part = decodePart(getPart(buf));
-        let res = [part.data];
-        let { left } = part;
+        var part = decodePart(getPart(buf));
+        var res = [part.data];
+        var left = part.left;
         while (left.byteLength > 0) {
-            let _part = decodePart(getPart(left));
+            var _part = decodePart(getPart(left));
             res.push(_part.data);
             left = _part.left;
         }
