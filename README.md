@@ -17,7 +17,8 @@ let buf = encode( // encode data
     null,
     undefined,
     Buffer.from("or a buffer"),
-    new Error("even an error")
+    new Error("even an error"),
+    new Date()
 );
 
 console.log(buf);
@@ -43,8 +44,9 @@ This map shows the representations of supported types:
 
 - `a => Array` arrays will be encoded recursively.
 - `b => Buffer` buffers will keep the original form.
+- `d => Date` encode the ISO string, when decode, generate an new instance.
 - `e => Error` encode the stack, when decode, generate an error-like object.
-- `f => function` functions cannot be encoded, so treated as `undefined`.
+- `f => function` functions cannot be encoded, so treated as `void`.
 - `n => number` encoded as string.
 - `o => object` objects will be encoded recursively.
 - `r => RegExp` encoded as string.

@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var invert = require("lodash/invert");
 exports.KeyType = {
     a: "Array",
     b: "Buffer",
+    d: "Date",
     e: "Error",
     f: "function",
     n: "number",
@@ -13,17 +15,5 @@ exports.KeyType = {
     u: "undefined",
     v: "void"
 };
-exports.TypeKey = {
-    Array: "a",
-    Buffer: "b",
-    Error: "e",
-    function: "f",
-    number: "n",
-    object: "o",
-    RegExp: "r",
-    string: "s",
-    symbol: "S",
-    undefined: "u",
-    void: "v"
-};
+exports.TypeKey = invert(exports.KeyType);
 //# sourceMappingURL=type-map.js.map

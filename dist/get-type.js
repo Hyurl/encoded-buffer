@@ -9,6 +9,9 @@ function isRegExp(obj) {
 function isError(obj) {
     return type(obj) == "Error";
 }
+function isDate(obj) {
+    return type(obj) == "Date";
+}
 function getType(obj) {
     var type;
     if (Buffer.isBuffer(obj)) {
@@ -25,6 +28,9 @@ function getType(obj) {
     }
     else if (isError(obj)) {
         type = "Error";
+    }
+    else if (isDate(obj)) {
+        type = "Date";
     }
     else {
         type = typeof obj;

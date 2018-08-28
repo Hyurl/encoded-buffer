@@ -1,6 +1,9 @@
+import invert = require("lodash/invert");
+
 export const KeyType = {
     a: "Array",
     b: "Buffer",
+    d: "Date",
     e: "Error",
     f: "function",
     n: "number",
@@ -12,16 +15,4 @@ export const KeyType = {
     v: "void"
 };
 
-export const TypeKey = {
-    Array: "a",
-    Buffer: "b",
-    Error: "e",
-    function: "f",
-    number: "n",
-    object: "o",
-    RegExp: "r",
-    string: "s",
-    symbol: "S",
-    undefined: "u",
-    void: "v"
-};
+export const TypeKey = invert(KeyType);

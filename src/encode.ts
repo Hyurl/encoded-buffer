@@ -47,6 +47,10 @@ function encodePart(data: any): Buffer {
             body = data;
             break;
 
+        case "Date":
+            body = toBuffer((<Date>data).toISOString());
+            break;
+
         case "Error": // encode the error stack.
             body = toBuffer((<Error>data).stack);
             break;
@@ -70,9 +74,9 @@ function encodePart(data: any): Buffer {
 
             for (let x in data) {
                 if ((<object>data).hasOwnProperty(x)) {
-                    let keyBuf = toBuffer(`${x}:`);
+                    let keyBuf = encodePart(x);
                     let valueBuf = encodePart(data[x]);
-                    pairs.push(Buffer.concat([keyBuf, valueBuf]));
+                    pairs.push(Buffer.concat([keyBuf, toBuffer(";"), valueBuf]));
                 }
             }
 

@@ -57,6 +57,10 @@ function decodePart(part: DataPart): DataPart {
             res = data;
             break;
 
+        case "Date": // rebuild the Date instance.
+            res = new Date(data.toString());
+            break;
+
         case "Error": // rebuild the Error instance.
             let stack = data.toString(),
                 matches = stack.match(/(.+): (.+)/),
@@ -75,11 +79,11 @@ function decodePart(part: DataPart): DataPart {
             });
             break;
 
-        case "function": // functions cannot be encoded.
         case "undefined":
             res = undefined;
             break;
 
+        case "function": // functions cannot be encoded.
         case "void":
             res = null;
             break;
@@ -91,13 +95,10 @@ function decodePart(part: DataPart): DataPart {
         case "object": // cyclically decode every element in the array.
             res = {};
             while (data.byteLength > 0) {
-                let i = data.indexOf(":"),
-                    key = data.slice(0, i).toString();
-                data = data.slice(i + 1);
-
-                let _part = decodePart(getPart(data));
-                data = _part.left;
-                res[key] = _part.data;
+                let keyPart = decodePart(getPart(data));
+                let valuePart = decodePart(getPart(keyPart.left));
+                res[keyPart.data] = valuePart.data;
+                data = valuePart.left;
             }
             break;
 

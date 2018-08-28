@@ -13,6 +13,11 @@ function isError(obj: any): boolean {
     return type(obj) == "Error";
 }
 
+/** Checks if the given object is a Date instance. */
+function isDate(obj: any): boolean {
+    return type(obj) == "Date";
+}
+
 /** Gets the type of the given object. */
 export function getType(obj: any): string {
     let type: string;
@@ -26,6 +31,8 @@ export function getType(obj: any): string {
         type = "RegExp";
     } else if (isError(obj)) {
         type = "Error";
+    } else if (isDate(obj)) {
+        type = "Date";
     } else {
         type = typeof obj;
     }

@@ -1,6 +1,6 @@
-const encode = require("./").encode;
-const decode = require("./").decode;
-const assert = require("assert");
+var encode = require("./").encode;
+var decode = require("./").decode;
+var assert = require("assert");
 
 var buf = parseFloat(process.version.slice(1)) < 6 ? new Buffer("or a buffer") : Buffer.from("or a buffer");
 var data = [
@@ -13,12 +13,13 @@ var data = [
     null,
     undefined,
     buf,
-    new Error("even an error")
+    new Error("even an error"),
+    new Date()
 ];
 
-var buf = encode.apply(null, data);
+var dataBuf = encode.apply(null, data);
 
-var _data = decode(buf); // decode data
+var _data = decode(dataBuf); // decode data
 
 for (var i in _data) {
     var item = _data[i];
@@ -26,8 +27,8 @@ for (var i in _data) {
         assert.strictEqual(item, data[i]);
     } else if (Array.isArray(item)) {
         assert.deepStrictEqual(item, data[i]);
-    } else if (typeof item == "symbol" || Buffer.isBuffer(item) || item instanceof Error) {
-        assert.equal(item.toString(), data[i].toString());
+    } else if (typeof item == "symbol" || Buffer.isBuffer(item) || item instanceof Error || item instanceof Date) {
+        assert.strictEqual(item.toString(), data[i].toString());
     } else {
         assert.deepStrictEqual(item, data[i]);
     }

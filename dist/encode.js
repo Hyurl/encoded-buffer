@@ -35,6 +35,9 @@ function encodePart(data) {
         case "Buffer":
             body = data;
             break;
+        case "Date":
+            body = toBuffer(data.toISOString());
+            break;
         case "Error":
             body = toBuffer(data.stack);
             break;
@@ -52,9 +55,9 @@ function encodePart(data) {
             var start2 = toBuffer("{"), end2 = toBuffer("}"), pairs = [];
             for (var x in data) {
                 if (data.hasOwnProperty(x)) {
-                    var keyBuf = toBuffer(x + ":");
+                    var keyBuf = encodePart(x);
                     var valueBuf = encodePart(data[x]);
-                    pairs.push(Buffer.concat([keyBuf, valueBuf]));
+                    pairs.push(Buffer.concat([keyBuf, toBuffer(";"), valueBuf]));
                 }
             }
             body = Buffer.concat([start2, concatBuffers(pairs), end2]);

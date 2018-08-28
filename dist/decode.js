@@ -23,6 +23,7 @@ function getPart(buf) {
     return { type: type, data: data, left: buf.slice(end + 1) };
 }
 function decodePart(part) {
+    var _a;
     var res;
     var type = part.type, left = part.left;
     var data = part.data;
@@ -40,6 +41,9 @@ function decodePart(part) {
         case "Buffer":
             res = data;
             break;
+        case "Date":
+            res = new Date(data.toString());
+            break;
         case "Error":
             var stack = data.toString(), matches = stack.match(/(.+): (.+)/), name = matches[1], msg = matches[2];
             res = Object.create(Error.prototype, (_a = {
@@ -54,10 +58,10 @@ function decodePart(part) {
                 },
                 _a));
             break;
-        case "function":
         case "undefined":
             res = undefined;
             break;
+        case "function":
         case "void":
             res = null;
             break;
@@ -67,11 +71,10 @@ function decodePart(part) {
         case "object":
             res = {};
             while (data.byteLength > 0) {
-                var i_1 = data.indexOf(":"), key = data.slice(0, i_1).toString();
-                data = data.slice(i_1 + 1);
-                var _part = decodePart(getPart(data));
-                data = _part.left;
-                res[key] = _part.data;
+                var keyPart = decodePart(getPart(data));
+                var valuePart = decodePart(getPart(keyPart.left));
+                res[keyPart.data] = valuePart.data;
+                data = valuePart.left;
             }
             break;
         case "RegExp":
@@ -87,7 +90,6 @@ function decodePart(part) {
             break;
     }
     return { type: type, data: res, left: left };
-    var _a;
 }
 function decode(buf) {
     try {
