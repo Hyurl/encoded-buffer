@@ -2,7 +2,8 @@ import invert = require("lodash/invert");
 
 export const KeyType = {
     a: "Array",
-    b: "Buffer",
+    b: "boolean",
+    B: "Buffer",
     d: "Date",
     e: "Error",
     f: "function",

@@ -32,6 +32,9 @@ function encodePart(data) {
             }
             body = Buffer.concat([start, concatBuffers(bufs), end]);
             break;
+        case "boolean":
+            body = toBuffer(data ? "1" : []);
+            break;
         case "Buffer":
             body = data;
             break;

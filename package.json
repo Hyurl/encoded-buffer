@@ -1,6 +1,6 @@
 {
   "name": "encoded-buffer",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Encode data into a well-formatted buffer and decode it when needed.",
   "main": "dist/index.js",
   "types": "src/index.ts",

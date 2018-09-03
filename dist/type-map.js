@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var invert = require("lodash/invert");
 exports.KeyType = {
     a: "Array",
-    b: "Buffer",
+    b: "boolean",
+    B: "Buffer",
     d: "Date",
     e: "Error",
     f: "function",

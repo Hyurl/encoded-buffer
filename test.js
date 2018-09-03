@@ -1,5 +1,5 @@
-var encode = require("./").encode;
-var decode = require("./").decode;
+var encode = require(".").encode;
+var decode = require(".").decode;
 var assert = require("assert");
 
 var buf = parseFloat(process.version.slice(1)) < 6 ? new Buffer("or a buffer") : Buffer.from("or a buffer");
@@ -14,16 +14,19 @@ var data = [
     undefined,
     buf,
     new Error("even an error"),
-    new Date()
+    new Date(),
+    true
 ];
 
-var dataBuf = encode.apply(null, data);
+var dataBuf = encode.apply(undefined, data);
 
 var _data = decode(dataBuf); // decode data
 
+assert.ok(_data instanceof Array);
+
 for (var i in _data) {
     var item = _data[i];
-    if (typeof item == "string" || typeof item == "number" || item === null || item === undefined) {
+    if (typeof item == "string" || typeof item == "number" || typeof item == "boolean" || item === null || item === undefined) {
         assert.strictEqual(item, data[i]);
     } else if (Array.isArray(item)) {
         assert.deepStrictEqual(item, data[i]);

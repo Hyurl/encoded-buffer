@@ -38,6 +38,9 @@ function decodePart(part) {
                 res.push(_part.data);
             }
             break;
+        case "boolean":
+            res = data.length ? true : false;
+            break;
         case "Buffer":
             res = data;
             break;

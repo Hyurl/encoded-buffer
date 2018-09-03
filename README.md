@@ -19,6 +19,7 @@ let buf = encode( // encode data
     Buffer.from("or a buffer"),
     new Error("even an error"),
     new Date()
+    true
 );
 
 console.log(buf);
@@ -43,7 +44,8 @@ and they are encoded recursively.
 This map shows the representations of supported types:
 
 - `a => Array` arrays will be encoded recursively.
-- `b => Buffer` buffers will keep the original form.
+- `b => boolean` booleans are encoded either as 1 or empty buffer.
+- `B => Buffer` buffers will keep the original form.
 - `d => Date` encode the ISO string, when decode, generate an new instance.
 - `e => Error` encode the stack, when decode, generate an error-like object.
 - `f => function` functions cannot be encoded, so treated as `void`.

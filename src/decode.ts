@@ -53,6 +53,10 @@ function decodePart(part: DataPart): DataPart {
             }
             break;
 
+        case "boolean":
+            res = data.length ? true : false;
+            break;
+
         case "Buffer":
             res = data;
             break;
