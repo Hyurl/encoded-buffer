@@ -81,7 +81,7 @@ function decodePart(part) {
             }
             break;
         case "RegExp":
-            var i = data.lastIndexOf("/"), pattern = data.slice(1, i).toString(), flags = data.slice(i + 1).toString();
+            var _data = type_map_1.isOldNode ? data.toString() : data, i = _data.lastIndexOf("/"), pattern = _data.slice(1, i).toString(), flags = _data.slice(i + 1).toString();
             res = new RegExp(pattern, flags);
             break;
         case "symbol":

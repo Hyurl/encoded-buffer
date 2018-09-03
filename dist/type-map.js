@@ -17,4 +17,5 @@ exports.KeyType = {
     v: "void"
 };
 exports.TypeKey = invert(exports.KeyType);
+exports.isOldNode = parseFloat(process.version.slice(1)) < 6.0;
 //# sourceMappingURL=type-map.js.map

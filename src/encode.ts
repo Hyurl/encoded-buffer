@@ -1,7 +1,5 @@
 import { getType } from "./get-type";
-import { TypeKey } from "./type-map";
-
-const isOldNode = parseFloat(process.version.slice(1)) < 6.0;
+import { TypeKey, isOldNode } from "./type-map";
 
 function toBuffer(input: any): Buffer {
     return isOldNode ? new Buffer(input) : Buffer.from(input);

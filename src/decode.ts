@@ -1,4 +1,4 @@
-import { KeyType } from "./type-map";
+import { KeyType, isOldNode } from "./type-map";
 const inspect = require("util").inspect.custom || "inspect";
 
 type DataPart = {
@@ -107,9 +107,10 @@ function decodePart(part: DataPart): DataPart {
             break;
 
         case "RegExp": // rebuild the RegExp instance.
-            let i = data.lastIndexOf("/"),
-                pattern = data.slice(1, i).toString(),
-                flags = data.slice(i + 1).toString();
+            let _data: string | Buffer = isOldNode ? data.toString() : data,
+                i = (<string>_data).lastIndexOf("/"),
+                pattern = _data.slice(1, i).toString(),
+                flags = _data.slice(i + 1).toString();
 
             res = new RegExp(pattern, flags);
             break;

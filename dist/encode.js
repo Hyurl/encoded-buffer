@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var get_type_1 = require("./get-type");
 var type_map_1 = require("./type-map");
-var isOldNode = parseFloat(process.version.slice(1)) < 6.0;
 function toBuffer(input) {
-    return isOldNode ? new Buffer(input) : Buffer.from(input);
+    return type_map_1.isOldNode ? new Buffer(input) : Buffer.from(input);
 }
 function concatBuffers(bufs) {
     var res = toBuffer([]), sep = toBuffer(";");
