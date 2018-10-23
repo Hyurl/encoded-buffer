@@ -41,7 +41,7 @@ for (var i in _data) {
         assert.strictEqual(item.message, data[i].message);
         assert.strictEqual(item.stack, data[i].stack);
 
-        for (let x in item) {
+        for (var x in item) {
             if (x != "name" && x != "message" && x != "stack") {
                 assert.strictEqual(item[x], data[i][x]);
             }
