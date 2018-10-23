@@ -41,7 +41,17 @@ function encodePart(data) {
             body = toBuffer(data.toISOString());
             break;
         case "Error":
-            body = toBuffer(data.stack);
+            var err = {
+                name: data.name,
+                message: data.message,
+                stack: data.stack
+            };
+            for (var x in data) {
+                if (x != "name" && x != "message" && x != "stack") {
+                    err[x] = data[x];
+                }
+            }
+            body = encodePart(err);
             break;
         case "number":
         case "RegExp":

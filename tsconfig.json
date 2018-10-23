@@ -15,8 +15,8 @@
             "es2015.symbol"
         ]
     },
-    "files": [
-        "src/index.ts"
+    "include": [
+        "src/*"
     ],
     "exclude": [
         "node_modules/*"

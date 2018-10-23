@@ -54,7 +54,19 @@ function encodePart(data: any): Buffer {
             break;
 
         case "Error": // encode the error stack.
-            body = toBuffer((<Error>data).stack);
+            let err = {
+                name: data.name,
+                message: data.message,
+                stack: data.stack
+            };
+
+            for (let x in data) {
+                if (x != "name" && x != "message" && x != "stack") {
+                    err[x] = data[x];
+                }
+            }
+
+            body = encodePart(err);
             break;
 
         case "number":

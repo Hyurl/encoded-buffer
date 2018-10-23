@@ -3,6 +3,10 @@ var decode = require(".").decode;
 var assert = require("assert");
 
 var buf = parseFloat(process.version.slice(1)) < 6 ? new Buffer("or a buffer") : Buffer.from("or a buffer");
+
+var err = new TypeError("even an error");
+err["code"] = "EUSERERR";
+
 var data = [
     "string",
     12345,
@@ -13,7 +17,7 @@ var data = [
     null,
     undefined,
     buf,
-    new Error("even an error"),
+    err, //new TypeError("even an error"),
     new Date(),
     true
 ];
@@ -30,8 +34,18 @@ for (var i in _data) {
         assert.strictEqual(item, data[i]);
     } else if (Array.isArray(item)) {
         assert.deepStrictEqual(item, data[i]);
-    } else if (typeof item == "symbol" || Buffer.isBuffer(item) || item instanceof Error || item instanceof Date) {
+    } else if (typeof item == "symbol" || Buffer.isBuffer(item) || item instanceof Date) {
         assert.strictEqual(item.toString(), data[i].toString());
+    } else if (item instanceof Error) {
+        assert.strictEqual(item.name, data[i].name);
+        assert.strictEqual(item.message, data[i].message);
+        assert.strictEqual(item.stack, data[i].stack);
+
+        for (let x in item) {
+            if (x != "name" && x != "message" && x != "stack") {
+                assert.strictEqual(item[x], data[i][x]);
+            }
+        }
     } else {
         assert.deepStrictEqual(item, data[i]);
     }

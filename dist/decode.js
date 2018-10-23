@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_map_1 = require("./type-map");
-var inspect = require("util").inspect.custom || "inspect";
 function throwError() {
     throw new TypeError("The buffer cannot be decoded.");
 }
@@ -23,7 +22,6 @@ function getPart(buf) {
     return { type: type, data: data, left: buf.slice(end + 1) };
 }
 function decodePart(part) {
-    var _a;
     var res;
     var type = part.type, left = part.left;
     var data = part.data;
@@ -48,18 +46,17 @@ function decodePart(part) {
             res = new Date(data.toString());
             break;
         case "Error":
-            var stack = data.toString(), matches = stack.match(/(.+): (.+)/), name = matches[1], msg = matches[2];
-            res = Object.create(Error.prototype, (_a = {
-                    name: { value: name },
-                    message: { value: msg },
-                    stack: { value: stack }
-                },
-                _a[inspect] = {
-                    value: function () {
-                        return this.stack;
-                    }
-                },
-                _a));
+            var _err = decodePart(getPart(data)).data, name = _err.name, message = _err.message, stack = _err.stack;
+            res = Object.create((type_map_1.Errors[name] || Error).prototype, {
+                name: { configurable: true, writable: true, value: name },
+                message: { configurable: true, writable: true, value: message },
+                stack: { configurable: true, writable: true, value: stack }
+            });
+            for (var x in _err) {
+                if (x != "name" && x != "message" && x != "stack") {
+                    res[x] = _err[x];
+                }
+            }
             break;
         case "undefined":
             res = undefined;

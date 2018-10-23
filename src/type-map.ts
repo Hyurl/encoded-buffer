@@ -1,4 +1,5 @@
 import invert = require("lodash/invert");
+import { AssertionError } from "assert";
 
 export const KeyType = {
     a: "Array",
@@ -19,3 +20,13 @@ export const KeyType = {
 export const TypeKey = invert(KeyType);
 
 export const isOldNode = parseFloat(process.version.slice(1)) < 6.0;
+
+export const Errors = {
+    AssertionError,
+    Error,
+    EvalError,
+    RangeError,
+    ReferenceError,
+    SyntaxError,
+    TypeError
+};

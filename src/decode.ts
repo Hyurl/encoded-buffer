@@ -1,5 +1,4 @@
-import { KeyType, isOldNode } from "./type-map";
-const inspect = require("util").inspect.custom || "inspect";
+import { KeyType, isOldNode, Errors } from "./type-map";
 
 type DataPart = {
     type: string;
@@ -66,21 +65,21 @@ function decodePart(part: DataPart): DataPart {
             break;
 
         case "Error": // rebuild the Error instance.
-            let stack = data.toString(),
-                matches = stack.match(/(.+): (.+)/),
-                name = matches[1],
-                msg = matches[2];
+            let _err: Error = decodePart(getPart(data)).data,
+                { name, message, stack } = _err;
 
-            res = Object.create(Error.prototype, {
-                name: { value: name },
-                message: { value: msg },
-                stack: { value: stack },
-                [inspect]: {
-                    value: function () {
-                        return this.stack;
-                    }
-                }
+            res = Object.create((Errors[name] || Error).prototype, {
+                name: { configurable: true, writable: true, value: name },
+                message: { configurable: true, writable: true, value: message },
+                stack: { configurable: true, writable: true, value: stack }
             });
+
+            for (let x in _err) {
+                if (x != "name" && x != "message" && x != "stack") {
+                    res[x] = _err[x];
+                }
+            }
+
             break;
 
         case "undefined":
