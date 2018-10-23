@@ -53,7 +53,8 @@ This map shows the representations of supported types:
 - `n => number` encoded as string.
 - `o => object` objects will be encoded recursively.
 - `r => RegExp` encoded as string.
-- `s => string` buffered as what it is.
+- `s => string` buffered as what it is, special characters like `\r`, `\n`, etc.
+    should be escaped.
 - `S => symbol` encoded as string, when decode, generate a new symbol.
 - `u => undefined` encoded as `0x0`.
 - `v => void` for `null`, encoded as `0x0`.

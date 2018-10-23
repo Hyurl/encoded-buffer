@@ -75,7 +75,7 @@ function encodePart(data) {
             body = Buffer.concat([start2, concatBuffers(pairs), end2]);
             break;
         case "string":
-            body = toBuffer(data);
+            body = toBuffer(JSON.stringify(data).slice(1, -1));
             break;
         default:
             body = toBuffer(String(data));

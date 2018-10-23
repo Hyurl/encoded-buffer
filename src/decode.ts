@@ -114,6 +114,10 @@ function decodePart(part: DataPart): DataPart {
             res = new RegExp(pattern, flags);
             break;
 
+        case "string":
+            res = JSON.parse('"' + data.toString() + '"');
+            break;
+
         case "symbol": // rebuild the symbol.
             let desc = data.toString().match(/\((.*)\)/)[1];
             res = Symbol(desc);

@@ -81,6 +81,9 @@ function decodePart(part) {
             var _data = type_map_1.isOldNode ? data.toString() : data, i = _data.lastIndexOf("/"), pattern = _data.slice(1, i).toString(), flags = _data.slice(i + 1).toString();
             res = new RegExp(pattern, flags);
             break;
+        case "string":
+            res = JSON.parse('"' + data.toString() + '"');
+            break;
         case "symbol":
             var desc = data.toString().match(/\((.*)\)/)[1];
             res = Symbol(desc);

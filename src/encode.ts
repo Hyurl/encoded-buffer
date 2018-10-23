@@ -98,7 +98,7 @@ function encodePart(data: any): Buffer {
             break;
 
         case "string":
-            body = toBuffer(<string>data);
+            body = toBuffer(JSON.stringify(<string>data).slice(1, -1));
             break;
 
         default: // transform unknown types.
