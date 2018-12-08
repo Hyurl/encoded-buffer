@@ -22,13 +22,14 @@ function getPart(buf: Buffer): DataPart {
     let i = buf.indexOf(":", 2);
     if (i <= 2) throwError();
 
-    let lenStr: string = buf.slice(2, i).toString();
-    if (isNaN(<any>lenStr)) throwError();
-    let len: number = parseInt(lenStr);
+    let len = parseInt(buf.slice(2, i).toString());
+    if (isNaN(len)) throwError();
 
     let start: number = i + 1,
         end: number = start + len,
         data = buf.slice(start, end);
+
+    if (data.byteLength < len) throwError();
 
     return { type, data, left: buf.slice(end + 1) };
 }

@@ -14,11 +14,12 @@ function getPart(buf) {
     var i = buf.indexOf(":", 2);
     if (i <= 2)
         throwError();
-    var lenStr = buf.slice(2, i).toString();
-    if (isNaN(lenStr))
+    var len = parseInt(buf.slice(2, i).toString());
+    if (isNaN(len))
         throwError();
-    var len = parseInt(lenStr);
     var start = i + 1, end = start + len, data = buf.slice(start, end);
+    if (data.byteLength < len)
+        throwError();
     return { type: type, data: data, left: buf.slice(end + 1) };
 }
 function decodePart(part) {
