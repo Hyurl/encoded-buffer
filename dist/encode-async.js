@@ -29,7 +29,7 @@ function encodePart(data) {
                 body = Buffer.concat([start2, util_1.concatBuffers(pairs), end2]);
                 break;
             default:
-                body = encode_1.encode(data);
+                body = encode_1.encodeType(data, type);
                 break;
         }
         head = toBuffer(`${key}:${body.byteLength}:`);

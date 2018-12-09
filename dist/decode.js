@@ -1,22 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const util_1 = require("./util");
-function decodePart(part) {
+function decodeType(data, type) {
     let res;
-    let type = part.type;
-    let left = part.left;
-    let data = part.data;
-    if (type == "Array" || type == "object")
-        data = data.slice(1, -1);
     switch (type) {
-        case "Array":
-            res = [];
-            while (data.byteLength > 0) {
-                let _part = decodePart(util_1.getPart(data));
-                data = _part.left;
-                res.push(_part.data);
-            }
-            break;
         case "boolean":
             res = data.length ? true : false;
             break;
@@ -49,15 +36,6 @@ function decodePart(part) {
         case "number":
             res = parseFloat(data.toString());
             break;
-        case "object":
-            res = {};
-            while (data.byteLength > 0) {
-                let keyPart = decodePart(util_1.getPart(data));
-                let valuePart = decodePart(util_1.getPart(keyPart.left));
-                res[keyPart.data] = valuePart.data;
-                data = valuePart.left;
-            }
-            break;
         case "RegExp":
             let str = data.toString(), i = str.lastIndexOf("/"), pattern = str.slice(1, i), flags = str.slice(i + 1);
             res = new RegExp(pattern, flags);
@@ -71,6 +49,38 @@ function decodePart(part) {
             break;
         default:
             res = data.toString();
+            break;
+    }
+    return res;
+}
+exports.decodeType = decodeType;
+function decodePart(part) {
+    let res;
+    let type = part.type;
+    let left = part.left;
+    let data = part.data;
+    if (type == "Array" || type == "object")
+        data = data.slice(1, -1);
+    switch (type) {
+        case "Array":
+            res = [];
+            while (data.byteLength > 0) {
+                let _part = decodePart(util_1.getPart(data));
+                data = _part.left;
+                res.push(_part.data);
+            }
+            break;
+        case "object":
+            res = {};
+            while (data.byteLength > 0) {
+                let keyPart = decodePart(util_1.getPart(data));
+                let valuePart = decodePart(util_1.getPart(keyPart.left));
+                res[keyPart.data] = valuePart.data;
+                data = valuePart.left;
+            }
+            break;
+        default:
+            res = decodeType(data, type);
             break;
     }
     return { type, data: res, left };

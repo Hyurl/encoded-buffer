@@ -1,26 +1,10 @@
 import { getType, concatBuffers, TypeKey } from "./util";
 import toBuffer = require("to-buffer");
 
-/** Encodes every part of the data. */
-function encodePart(data: any): Buffer {
-    let type = getType(data);
-    let key: string = TypeKey[type];
-    let head: Buffer, body: Buffer;
+export function encodeType(data: any, type: string): Buffer {
+    let body: Buffer;
 
     switch (type) {
-        case "Array": // cyclically encode every element in the array.
-            let start = toBuffer("["), // arrays are enwrapped in [].
-                end = toBuffer("]"),
-                bufs: Buffer[] = [];
-
-            for (let ele of data) {
-                let buf = encodePart(ele);
-                bufs.push(buf);
-            }
-
-            body = Buffer.concat([start, concatBuffers(bufs), end]);
-            break;
-
         case "boolean":
             body = toBuffer(data ? "1" : [])
             break;
@@ -61,6 +45,38 @@ function encodePart(data: any): Buffer {
             body = toBuffer([]); // buffered as 0x0.
             break;
 
+        case "string":
+            body = toBuffer(JSON.stringify(<string>data).slice(1, -1));
+            break;
+
+        default: // transform unknown types.
+            body = toBuffer(String(data));
+            break;
+    }
+
+    return body;
+}
+
+/** Encodes every part of the data. */
+function encodePart(data: any): Buffer {
+    let type = getType(data);
+    let key: string = TypeKey[type];
+    let head: Buffer, body: Buffer;
+
+    switch (type) {
+        case "Array": // cyclically encode every element in the array.
+            let start = toBuffer("["), // arrays are enwrapped in [].
+                end = toBuffer("]"),
+                bufs: Buffer[] = [];
+
+            for (let ele of data) {
+                let buf = encodePart(ele);
+                bufs.push(buf);
+            }
+
+            body = Buffer.concat([start, concatBuffers(bufs), end]);
+            break;
+
         case "object": // cyclically encode every property in the object.
             let start2 = toBuffer("{"), // objects are enwrapped in { }.
                 end2 = toBuffer("}"),
@@ -77,12 +93,8 @@ function encodePart(data: any): Buffer {
             body = Buffer.concat([start2, concatBuffers(pairs), end2]);
             break;
 
-        case "string":
-            body = toBuffer(JSON.stringify(<string>data).slice(1, -1));
-            break;
-
-        default: // transform unknown types.
-            body = toBuffer(String(data));
+        default:
+            body = encodeType(data, type);
             break;
     }
 

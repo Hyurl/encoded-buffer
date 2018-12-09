@@ -1,5 +1,5 @@
 import { DataPart, getPart } from "./util";
-import { decode } from "./decode";
+import { decodeType } from "./decode";
 
 /** Decodes every part of the buffer. */
 async function decodePart(part: DataPart): Promise<DataPart> {
@@ -32,7 +32,7 @@ async function decodePart(part: DataPart): Promise<DataPart> {
             break;
 
         default:
-            res = decode(data)[0];
+            res = decodeType(data, type);
             break;
     }
 

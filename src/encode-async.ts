@@ -1,5 +1,5 @@
 import { getType, concatBuffers, TypeKey } from "./util";
-import { encode } from "./encode";
+import { encodeType } from "./encode";
 import toBuffer = require("to-buffer");
 
 /** Encodes every part of the data. */
@@ -38,7 +38,7 @@ async function encodePart(data: any): Promise<Buffer> {
             break;
 
         default:
-            body = encode(data);
+            body = encodeType(data, type);
             break;
     }
 

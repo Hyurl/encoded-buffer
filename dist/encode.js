@@ -2,19 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const util_1 = require("./util");
 const toBuffer = require("to-buffer");
-function encodePart(data) {
-    let type = util_1.getType(data);
-    let key = util_1.TypeKey[type];
-    let head, body;
+function encodeType(data, type) {
+    let body;
     switch (type) {
-        case "Array":
-            let start = toBuffer("["), end = toBuffer("]"), bufs = [];
-            for (let ele of data) {
-                let buf = encodePart(ele);
-                bufs.push(buf);
-            }
-            body = Buffer.concat([start, util_1.concatBuffers(bufs), end]);
-            break;
         case "boolean":
             body = toBuffer(data ? "1" : []);
             break;
@@ -47,6 +37,29 @@ function encodePart(data) {
         case "void":
             body = toBuffer([]);
             break;
+        case "string":
+            body = toBuffer(JSON.stringify(data).slice(1, -1));
+            break;
+        default:
+            body = toBuffer(String(data));
+            break;
+    }
+    return body;
+}
+exports.encodeType = encodeType;
+function encodePart(data) {
+    let type = util_1.getType(data);
+    let key = util_1.TypeKey[type];
+    let head, body;
+    switch (type) {
+        case "Array":
+            let start = toBuffer("["), end = toBuffer("]"), bufs = [];
+            for (let ele of data) {
+                let buf = encodePart(ele);
+                bufs.push(buf);
+            }
+            body = Buffer.concat([start, util_1.concatBuffers(bufs), end]);
+            break;
         case "object":
             let start2 = toBuffer("{"), end2 = toBuffer("}"), pairs = [];
             for (let x in data) {
@@ -58,11 +71,8 @@ function encodePart(data) {
             }
             body = Buffer.concat([start2, util_1.concatBuffers(pairs), end2]);
             break;
-        case "string":
-            body = toBuffer(JSON.stringify(data).slice(1, -1));
-            break;
         default:
-            body = toBuffer(String(data));
+            body = encodeType(data, type);
             break;
     }
     head = toBuffer(`${key}:${body.byteLength}:`);

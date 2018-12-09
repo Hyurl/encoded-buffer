@@ -1,25 +1,9 @@
 import { getPart, DataPart, Errors } from "./util";
 
-/** Decodes every part of the buffer. */
-function decodePart(part: DataPart): DataPart {
-    let res: any;
-    let type = part.type;
-    let left = part.left;
-    let data: Buffer = part.data;
-
-    if (type == "Array" || type == "object")
-        data = data.slice(1, -1); // remove [ ] or { }.
+export function decodeType(data: Buffer, type: string): any {
+    let res;
 
     switch (type) {
-        case "Array": // cyclically decode every element in the array.
-            res = [];
-            while (data.byteLength > 0) {
-                let _part = decodePart(getPart(data));
-                data = _part.left;
-                (<any[]>res).push(_part.data);
-            }
-            break;
-
         case "boolean":
             res = data.length ? true : false;
             break;
@@ -65,16 +49,6 @@ function decodePart(part: DataPart): DataPart {
             res = parseFloat(data.toString());
             break;
 
-        case "object": // cyclically decode every element in the array.
-            res = {};
-            while (data.byteLength > 0) {
-                let keyPart = decodePart(getPart(data));
-                let valuePart = decodePart(getPart(keyPart.left));
-                res[keyPart.data] = valuePart.data;
-                data = valuePart.left;
-            }
-            break;
-
         case "RegExp": // rebuild the RegExp instance.
             let str: string = data.toString(),
                 i = str.lastIndexOf("/"),
@@ -95,6 +69,44 @@ function decodePart(part: DataPart): DataPart {
 
         default: // transform strings and unknown types.
             res = data.toString();
+            break;
+    }
+
+    return res;
+}
+
+/** Decodes every part of the buffer. */
+function decodePart(part: DataPart): DataPart {
+    let res: any;
+    let type = part.type;
+    let left = part.left;
+    let data: Buffer = part.data;
+
+    if (type == "Array" || type == "object")
+        data = data.slice(1, -1); // remove [ ] or { }.
+
+    switch (type) {
+        case "Array": // cyclically decode every element in the array.
+            res = [];
+            while (data.byteLength > 0) {
+                let _part = decodePart(getPart(data));
+                data = _part.left;
+                (<any[]>res).push(_part.data);
+            }
+            break;
+
+        case "object": // cyclically decode every element in the array.
+            res = {};
+            while (data.byteLength > 0) {
+                let keyPart = decodePart(getPart(data));
+                let valuePart = decodePart(getPart(keyPart.left));
+                res[keyPart.data] = valuePart.data;
+                data = valuePart.left;
+            }
+            break;
+
+        default:
+            res = decodeType(data, type);
             break;
     }
 

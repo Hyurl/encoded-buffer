@@ -30,7 +30,7 @@ function decodePart(part) {
                 }
                 break;
             default:
-                res = decode_1.decode(data)[0];
+                res = decode_1.decodeType(data, type);
                 break;
         }
         return { type, data: res, left };
