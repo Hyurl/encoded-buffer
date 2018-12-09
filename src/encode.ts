@@ -1,25 +1,5 @@
-import { getType } from "./get-type";
-import { TypeKey, isOldNode } from "./type-map";
-
-function toBuffer(input: any): Buffer {
-    return isOldNode ? new Buffer(input) : Buffer.from(input);
-}
-
-/** Concatenates buffers, adds ';' between each buffer. . */
-function concatBuffers(bufs: Buffer[]): Buffer {
-    let res: Buffer = toBuffer([]),
-        sep: Buffer = toBuffer(";");
-
-    for (let i in bufs) {
-        if (<any>i == 0) {
-            res = Buffer.concat([res, bufs[i]]);
-        } else {
-            res = Buffer.concat([res, sep, bufs[i]]);
-        }
-    }
-
-    return res;
-}
+import { getType, concatBuffers, TypeKey } from "./util";
+import toBuffer = require("to-buffer");
 
 /** Encodes every part of the data. */
 function encodePart(data: any): Buffer {
@@ -112,7 +92,9 @@ function encodePart(data: any): Buffer {
 }
 
 /** Encodes the given data into a well-formatted buffer. */
-export function encode(...data: any[]): Buffer {
+export function encode(...data: any[]): Buffer;
+export function encode() {
+    let data = Array.from(arguments);
     let bufs: Buffer[] = [];
 
     for (let part of data) {

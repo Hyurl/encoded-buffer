@@ -1,11 +1,11 @@
 {
   "name": "encoded-buffer",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "description": "Encode data into a well-formatted buffer and decode it when needed.",
   "main": "dist/index.js",
   "types": "src/index.ts",
   "scripts": {
-    "test": "node test"
+    "test": "mocha"
   },
   "keywords": [
     "encode",
@@ -23,10 +23,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "to-buffer": "^1.1.1",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.116",
-    "@types/node": "^10.9.2"
+    "@types/node": "^10.9.2",
+    "mocha": "^5.2.0"
   }
 }

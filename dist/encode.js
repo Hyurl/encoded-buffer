@@ -1,35 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var get_type_1 = require("./get-type");
-var type_map_1 = require("./type-map");
-function toBuffer(input) {
-    return type_map_1.isOldNode ? new Buffer(input) : Buffer.from(input);
-}
-function concatBuffers(bufs) {
-    var res = toBuffer([]), sep = toBuffer(";");
-    for (var i in bufs) {
-        if (i == 0) {
-            res = Buffer.concat([res, bufs[i]]);
-        }
-        else {
-            res = Buffer.concat([res, sep, bufs[i]]);
-        }
-    }
-    return res;
-}
+const util_1 = require("./util");
+const toBuffer = require("to-buffer");
 function encodePart(data) {
-    var type = get_type_1.getType(data);
-    var key = type_map_1.TypeKey[type];
-    var head, body;
+    let type = util_1.getType(data);
+    let key = util_1.TypeKey[type];
+    let head, body;
     switch (type) {
         case "Array":
-            var start = toBuffer("["), end = toBuffer("]"), bufs = [];
-            for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-                var ele = data_1[_i];
-                var buf = encodePart(ele);
+            let start = toBuffer("["), end = toBuffer("]"), bufs = [];
+            for (let ele of data) {
+                let buf = encodePart(ele);
                 bufs.push(buf);
             }
-            body = Buffer.concat([start, concatBuffers(bufs), end]);
+            body = Buffer.concat([start, util_1.concatBuffers(bufs), end]);
             break;
         case "boolean":
             body = toBuffer(data ? "1" : []);
@@ -41,12 +25,12 @@ function encodePart(data) {
             body = toBuffer(data.toISOString());
             break;
         case "Error":
-            var err = {
+            let err = {
                 name: data.name,
                 message: data.message,
                 stack: data.stack
             };
-            for (var x in data) {
+            for (let x in data) {
                 if (x != "name" && x != "message" && x != "stack") {
                     err[x] = data[x];
                 }
@@ -64,15 +48,15 @@ function encodePart(data) {
             body = toBuffer([]);
             break;
         case "object":
-            var start2 = toBuffer("{"), end2 = toBuffer("}"), pairs = [];
-            for (var x in data) {
+            let start2 = toBuffer("{"), end2 = toBuffer("}"), pairs = [];
+            for (let x in data) {
                 if (data.hasOwnProperty(x)) {
-                    var keyBuf = encodePart(x);
-                    var valueBuf = encodePart(data[x]);
+                    let keyBuf = encodePart(x);
+                    let valueBuf = encodePart(data[x]);
                     pairs.push(Buffer.concat([keyBuf, toBuffer(";"), valueBuf]));
                 }
             }
-            body = Buffer.concat([start2, concatBuffers(pairs), end2]);
+            body = Buffer.concat([start2, util_1.concatBuffers(pairs), end2]);
             break;
         case "string":
             body = toBuffer(JSON.stringify(data).slice(1, -1));
@@ -81,20 +65,16 @@ function encodePart(data) {
             body = toBuffer(String(data));
             break;
     }
-    head = toBuffer(key + ":" + body.byteLength + ":");
+    head = toBuffer(`${key}:${body.byteLength}:`);
     return Buffer.concat([head, body]);
 }
 function encode() {
-    var data = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        data[_i] = arguments[_i];
-    }
-    var bufs = [];
-    for (var _a = 0, data_2 = data; _a < data_2.length; _a++) {
-        var part = data_2[_a];
+    let data = Array.from(arguments);
+    let bufs = [];
+    for (let part of data) {
         bufs.push(encodePart(part));
     }
-    return concatBuffers(bufs);
+    return util_1.concatBuffers(bufs);
 }
 exports.encode = encode;
 //# sourceMappingURL=encode.js.map

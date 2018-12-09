@@ -1,43 +1,10 @@
-import { KeyType, isOldNode, Errors } from "./type-map";
-
-type DataPart = {
-    type: string;
-    data: any;
-    left: Buffer;
-};
-
-/** Throws error is the buffer cannot be decoded. */
-function throwError() {
-    throw new TypeError("The buffer cannot be decoded.");
-}
-
-/** Gets the first encoded part of the buffer. */
-function getPart(buf: Buffer): DataPart {
-    if (buf[1] !== 58) throwError(); // 58 == :
-
-    let type = String.fromCharCode(buf[0]);
-    if (KeyType[type] === undefined) throwError();
-    type = KeyType[type];
-
-    let i = buf.indexOf(":", 2);
-    if (i <= 2) throwError();
-
-    let len = parseInt(buf.slice(2, i).toString());
-    if (isNaN(len)) throwError();
-
-    let start: number = i + 1,
-        end: number = start + len,
-        data = buf.slice(start, end);
-
-    if (data.byteLength < len) throwError();
-
-    return { type, data, left: buf.slice(end + 1) };
-}
+import { getPart, DataPart, Errors } from "./util";
 
 /** Decodes every part of the buffer. */
 function decodePart(part: DataPart): DataPart {
     let res: any;
-    let { type, left } = part;
+    let type = part.type;
+    let left = part.left;
     let data: Buffer = part.data;
 
     if (type == "Array" || type == "object")
@@ -67,7 +34,9 @@ function decodePart(part: DataPart): DataPart {
 
         case "Error": // rebuild the Error instance.
             let _err: Error = decodePart(getPart(data)).data,
-                { name, message, stack } = _err;
+                name = _err.name,
+                message = _err.message,
+                stack = _err.stack;
 
             res = Object.create((Errors[name] || Error).prototype, {
                 name: { configurable: true, writable: true, value: name },
@@ -107,10 +76,10 @@ function decodePart(part: DataPart): DataPart {
             break;
 
         case "RegExp": // rebuild the RegExp instance.
-            let _data: string | Buffer = isOldNode ? data.toString() : data,
-                i = (<string>_data).lastIndexOf("/"),
-                pattern = _data.slice(1, i).toString(),
-                flags = _data.slice(i + 1).toString();
+            let str: string = data.toString(),
+                i = str.lastIndexOf("/"),
+                pattern = str.slice(1, i),
+                flags = str.slice(i + 1);
 
             res = new RegExp(pattern, flags);
             break;
@@ -140,7 +109,7 @@ export function decode(buf: Buffer): any[] {
     try {
         let part = decodePart(getPart(buf)); // decode the first part.
         let res: any[] = [part.data];
-        let { left } = part;
+        let left = part.left;
 
         while (left.byteLength > 0) { // decode every part cyclically.
             let _part = decodePart(getPart(left));
